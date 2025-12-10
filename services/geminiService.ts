@@ -94,9 +94,10 @@ const getApiKeys = (): string[] => {
 
 export const generateProductContent = async (rawText: string): Promise<ProductData> => {
   const apiKeys = getApiKeys();
+  console.log(`[Gemini Service] Loaded ${apiKeys.length} available API keys.`);
   
   if (apiKeys.length === 0) {
-    throw new Error("API Key not found. Please ensure API_KEY (and optionally API_KEY_2, API_KEY_3) is set in your .env file or environment variables.");
+    throw new Error("API Key not found. Please ensure API_KEY (and optionally API_KEY_2, API_KEY_3) is set in your .env file or Vercel environment variables.");
   }
 
   const systemInstruction = `
@@ -148,11 +149,34 @@ export const generateProductContent = async (rawText: string): Promise<ProductDa
       return parsed as ProductData;
 
     } catch (error: any) {
-      console.warn(`API Key ${i + 1} failed:`, error.message);
-      lastError = error;
+      // Try to parse JSON error message from the SDK/API
+      let errorMsg = error.message || String(error);
+      try {
+        if (typeof errorMsg === 'string' && (errorMsg.startsWith('{') || errorMsg.includes('{"error"'))) {
+           // Extract JSON part if mixed with text
+           const start = errorMsg.indexOf('{');
+           const end = errorMsg.lastIndexOf('}') + 1;
+           if (start >= 0 && end > start) {
+             const jsonPart = JSON.parse(errorMsg.substring(start, end));
+             if (jsonPart.error?.message) {
+               errorMsg = jsonPart.error.message;
+             }
+           }
+        }
+      } catch (e) {
+        // Fallback to original message if parsing fails
+      }
+
+      console.warn(`[Gemini Service] Key ${i + 1} failed:`, errorMsg);
+      lastError = new Error(errorMsg);
+      
+      const isOverloaded = errorMsg.toLowerCase().includes('overloaded') || errorMsg.includes('503');
       
       // If we have more keys, continue loop. Otherwise loop ends and we throw.
       if (i < apiKeys.length - 1) {
+        const delayMs = isOverloaded ? 4000 : 1000; // Wait 4s if overloaded, 1s otherwise
+        console.log(`[Gemini Service] Switching keys in ${delayMs}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delayMs));
         continue;
       }
     }

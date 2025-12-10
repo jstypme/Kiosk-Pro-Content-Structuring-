@@ -140,9 +140,18 @@ export default function App() {
         {step === 1 && (
              <div className="max-w-3xl mx-auto mt-4 md:mt-12 animate-fade-in-up space-y-6">
                 {error && (
-                  <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 text-red-100 p-4 rounded-xl flex items-center gap-3 shadow-lg">
-                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
-                    <p className="text-sm font-medium">{error}</p>
+                  <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 text-red-100 p-4 rounded-xl flex items-start gap-3 shadow-lg animate-fade-in">
+                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                        <p className="text-sm font-bold">Generation Failed</p>
+                        <p className="text-xs opacity-80 mt-1 font-mono break-all whitespace-pre-wrap">{error}</p>
+                        <p className="text-[10px] opacity-60 mt-2">
+                           {error.includes('503') || error.toLowerCase().includes('overloaded') 
+                              ? "The AI service is currently overloaded. We're automatically retrying with your available keys, but you may need to wait a moment." 
+                              : "Please check your API Key configuration in Vercel or your .env file."
+                           }
+                        </p>
+                    </div>
                   </div>
                 )}
                 <InputSection onGenerate={handleGenerate} isLoading={isLoading} />
