@@ -5,7 +5,7 @@ import MediaUpload from './MediaUpload';
 import ExportSection from './ExportSection';
 import { generateProductContent } from '../services/geminiService';
 import { ProductData, MediaFiles } from '../types';
-import { Box, FolderOpen, Zap, LayoutTemplate, AlertTriangle } from 'lucide-react';
+import { Box, FolderOpen, AlertTriangle } from 'lucide-react';
 import { getStoredDirectoryHandle, pickDirectory } from '../services/fileSystemService';
 
 const initialProductData: ProductData = {
@@ -79,19 +79,19 @@ export default function App() {
     <div className="min-h-screen pb-20 flex flex-col bg-[#050505] text-slate-300 font-sans selection:bg-purple-500 selection:text-white">
       
       {/* Header */}
-      <header className="bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-indigo-800 rounded-xl flex items-center justify-center shadow-lg shadow-purple-900/50">
-               <Box className="text-white w-5 h-5" />
+      <header className="bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-all">
+        <div className="max-w-[1600px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-600 to-indigo-800 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-purple-900/50">
+               <Box className="text-white w-4 h-4 md:w-5 md:h-5" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Kiosk <span className="text-purple-400">Architect</span></h1>
-              <p className="text-[10px] text-slate-500 font-bold tracking-widest uppercase">Premium Data Suite</p>
+              <h1 className="text-lg md:text-xl font-bold text-white tracking-tight leading-tight">Kiosk <span className="text-purple-400">Architect</span></h1>
+              <p className="text-[9px] md:text-[10px] text-slate-500 font-bold tracking-widest uppercase hidden sm:block">Premium Data Suite</p>
             </div>
           </div>
           
-          {/* Steps Indicator */}
+          {/* Steps Indicator - Hidden on mobile to save space, shown on md+ */}
           <div className="hidden md:flex items-center bg-[#111] p-1.5 rounded-full border border-white/5">
              <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step === 1 ? 'bg-purple-900/30 text-purple-300 border border-purple-500/30' : 'text-slate-600'}`}>
                 1. Input
@@ -106,16 +106,18 @@ export default function App() {
           
           <div className="flex items-center gap-4">
              {rootHandle ? (
-                  <div className="flex items-center gap-2 bg-[#111] px-3 py-1.5 rounded-lg border border-green-900/30 text-green-400 text-xs font-medium">
-                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                    <span className="truncate max-w-[150px]">{rootHandle.name}</span>
+                  <div className="flex items-center gap-2 bg-[#111] px-2 md:px-3 py-1.5 rounded-lg border border-green-900/30 text-green-400 text-[10px] md:text-xs font-medium max-w-[120px] md:max-w-none">
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></div>
+                    <span className="truncate">{rootHandle.name}</span>
                   </div>
                 ) : (
                   <button 
                     onClick={handleConnectFolder}
-                    className="flex items-center gap-2 text-xs bg-[#111] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 transition-colors"
+                    className="flex items-center gap-2 text-xs bg-[#111] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 transition-colors whitespace-nowrap"
                   >
-                    <FolderOpen className="w-3 h-3" /> Connect Library
+                    <FolderOpen className="w-3 h-3" /> 
+                    <span className="hidden sm:inline">Connect Library</span>
+                    <span className="sm:hidden">Connect</span>
                   </button>
                 )}
           </div>
@@ -123,13 +125,13 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-8 py-10 flex-grow w-full">
+      <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 md:py-10 flex-grow w-full">
         
         {step === 1 && (
-             <div className="max-w-3xl mx-auto mt-12 animate-fade-in-up space-y-6">
+             <div className="max-w-3xl mx-auto mt-4 md:mt-12 animate-fade-in-up space-y-6">
                 {error && (
                   <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl flex items-center gap-3">
-                    <AlertTriangle className="w-5 h-5 text-red-400" />
+                    <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
                     <p className="text-sm font-medium">{error}</p>
                   </div>
                 )}
@@ -141,7 +143,7 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
              
              {/* LEFT COLUMN: Data Editor (Text) */}
-             <div className="lg:col-span-7 space-y-8">
+             <div className="lg:col-span-7 space-y-6 md:space-y-8 order-2 lg:order-1">
                  <DataEditor 
                     data={productData} 
                     onChange={setProductData} 
@@ -149,18 +151,18 @@ export default function App() {
              </div>
              
              {/* RIGHT COLUMN: Media & Actions (Visuals) */}
-             <div className="lg:col-span-5 space-y-8">
-                 <div className="sticky top-24 space-y-8">
-                    <MediaUpload 
-                        media={media} 
-                        onChange={setMedia} 
-                    />
-
+             {/* Mobile: Appears at top. Desktop: Sticky on right */}
+             <div className="lg:col-span-5 space-y-6 md:space-y-8 order-1 lg:order-2">
+                 <div className="static lg:sticky lg:top-24 space-y-6 md:space-y-8">
                     <ExportSection 
                         data={productData} 
                         media={media} 
                         rootHandle={rootHandle}
                         onConnect={handleConnectFolder}
+                    />
+                    <MediaUpload 
+                        media={media} 
+                        onChange={setMedia} 
                     />
                  </div>
              </div>
@@ -171,8 +173,8 @@ export default function App() {
 
       {step === 1 && (
         <footer className="border-t border-white/5 mt-auto bg-[#0a0a0a]">
-            <div className="max-w-[1600px] mx-auto px-8 py-6 flex justify-between items-center">
-                <p className="text-xs text-slate-600">Powered by Google Gemini 2.5 Pro</p>
+            <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p className="text-xs text-slate-600 text-center md:text-left">Powered by Google Gemini 2.5 Pro</p>
                 <div className="flex gap-4 text-xs text-slate-600">
                     <span>Privacy</span>
                     <span>Terms</span>

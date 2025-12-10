@@ -43,10 +43,10 @@ const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, 
   };
 
   return (
-    <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-3xl p-6 text-white shadow-2xl shadow-purple-900/50 border border-purple-500/30">
+    <div className="bg-gradient-to-br from-purple-900 to-indigo-900 rounded-3xl p-5 md:p-6 text-white shadow-2xl shadow-purple-900/50 border border-purple-500/30">
       <div className="flex flex-col gap-4 mb-6">
         <div>
-          <h2 className="text-xl font-bold flex items-center gap-2 text-white">
+          <h2 className="text-lg md:text-xl font-bold flex items-center gap-2 text-white">
             <Package className="w-5 h-5 text-purple-200" />
             Export to Library
           </h2>
@@ -86,47 +86,47 @@ const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, 
       <div className="bg-black/50 rounded-xl p-4 font-mono text-[10px] border border-white/5 overflow-x-auto custom-scrollbar">
         <h3 className="text-purple-300 text-[9px] uppercase tracking-wider mb-3 border-b border-white/5 pb-2">Destination Structure</h3>
         
-        <div className="space-y-1.5 opacity-80">
+        <div className="space-y-1.5 opacity-80 whitespace-nowrap">
             <div className="flex items-center gap-2 text-purple-300 font-bold">
-                <HardDrive className="w-3 h-3" />
+                <HardDrive className="w-3 h-3 flex-shrink-0" />
                 <span>{rootHandle ? rootHandle.name : 'Select_Folder...'}</span>
             </div>
             
             <div className="pl-4 flex items-center gap-2 text-yellow-500">
-                <Folder className="w-3 h-3" />
+                <Folder className="w-3 h-3 flex-shrink-0" />
                 <span>{data.brand || '[Brand]'}</span>
             </div>
             
             <div className="pl-8 text-slate-400 flex items-center gap-2">
-                 <FileJson className="w-2 h-2" /> brand.json
+                 <FileJson className="w-2 h-2 flex-shrink-0" /> brand.json
             </div>
 
             <div className="pl-8 flex items-center gap-2 text-yellow-500">
-                <Folder className="w-3 h-3" />
+                <Folder className="w-3 h-3 flex-shrink-0" />
                 <span>{data.category || '[Category]'}</span>
             </div>
 
             <div className="pl-12 flex items-center gap-2 text-yellow-500">
-                <Folder className="w-3 h-3" />
+                <Folder className="w-3 h-3 flex-shrink-0" />
                 <span>{data.name || '[Product Name]'}</span>
             </div>
 
             <div className="pl-16 text-slate-400 flex items-center gap-2">
-                 <FileJson className="w-2 h-2" /> details.json
+                 <FileJson className="w-2 h-2 flex-shrink-0" /> details.json
             </div>
              {media.cover && (
                 <div className="pl-16 text-green-400 flex items-center gap-2">
-                    <Image className="w-2 h-2" /> cover.{media.cover.name.split('.').pop()}
+                    <Image className="w-2 h-2 flex-shrink-0" /> cover.{media.cover.name.split('.').pop()}
                 </div>
             )}
              {media.gallery.length > 0 && (
                 <div className="pl-16 text-green-400 flex items-center gap-2">
-                    <Image className="w-2 h-2" /> gallery_1..{media.gallery.length}
+                    <Image className="w-2 h-2 flex-shrink-0" /> gallery_1..{media.gallery.length}
                 </div>
             )}
              {media.videos.length > 0 && (
                 <div className="pl-16 text-purple-400 flex items-center gap-2">
-                    <Video className="w-2 h-2" /> videos_1..{media.videos.length}
+                    <Video className="w-2 h-2 flex-shrink-0" /> videos_1..{media.videos.length}
                 </div>
             )}
 

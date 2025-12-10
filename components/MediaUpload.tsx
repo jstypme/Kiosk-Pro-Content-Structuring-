@@ -17,13 +17,13 @@ interface CardProps {
 
 const Card = ({ children, title, icon: Icon, isProcessing }: CardProps) => (
     <div className="bg-[#111] border border-white/5 rounded-3xl overflow-hidden mb-6">
-        <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-b border-white/5">
+        <div className="bg-white/5 px-4 md:px-6 py-4 flex items-center justify-between border-b border-white/5">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Icon className="w-4 h-4 text-purple-400" /> {title}
             </h3>
             {isProcessing && <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />}
         </div>
-        <div className="p-6">
+        <div className="p-4 md:p-6">
             {children}
         </div>
     </div>
@@ -197,7 +197,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
 
       <Card title="Gallery Images" icon={Image} isProcessing={isProcessing}>
           <div 
-            className={`grid grid-cols-4 gap-2 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'gallery' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
+            className={`grid grid-cols-3 md:grid-cols-4 gap-2 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'gallery' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
              onDragEnter={(e) => handleDrag(e, 'gallery')}
              onDragLeave={(e) => handleDrag(e, 'gallery')}
              onDragOver={(e) => handleDrag(e, 'gallery')}
@@ -206,7 +206,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
             {media.gallery.map((file, i) => (
                 <div key={i} className="aspect-square bg-black border border-white/10 rounded-lg relative overflow-hidden group">
                      <img src={URL.createObjectURL(file)} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
-                     <button onClick={() => removeFile('gallery', i)} className="absolute top-0 right-0 bg-red-600 text-white w-5 h-5 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100">×</button>
+                     <button onClick={() => removeFile('gallery', i)} className="absolute top-0 right-0 bg-red-600 text-white w-5 h-5 flex items-center justify-center text-[10px] md:opacity-0 md:group-hover:opacity-100 transition-opacity">×</button>
                 </div>
             ))}
              <label className="aspect-square bg-black border border-white/10 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-purple-500/50 hover:bg-purple-900/10 transition-all">
