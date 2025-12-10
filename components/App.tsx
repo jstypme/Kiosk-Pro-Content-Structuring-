@@ -84,10 +84,10 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen pb-20 flex flex-col bg-[#050505] text-slate-300 font-sans selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen pb-20 flex flex-col flashy-bg text-slate-300 font-sans selection:bg-purple-500 selection:text-white">
       
       {/* Header */}
-      <header className="bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-all">
+      <header className="bg-[#0a0a0a]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-all">
         <div className="max-w-[1600px] mx-auto px-4 md:px-8 h-16 md:h-20 flex items-center justify-between">
           <div className="flex items-center gap-3 md:gap-4">
             <div className="w-8 h-8 md:w-10 md:h-10 bg-gradient-to-br from-purple-600 to-indigo-800 rounded-lg md:rounded-xl flex items-center justify-center shadow-lg shadow-purple-900/50">
@@ -100,28 +100,28 @@ export default function App() {
           </div>
           
           {/* Steps Indicator - Hidden on mobile to save space, shown on md+ */}
-          <div className="hidden md:flex items-center bg-[#111] p-1.5 rounded-full border border-white/5">
-             <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step === 1 ? 'bg-purple-900/30 text-purple-300 border border-purple-500/30' : 'text-slate-600'}`}>
+          <div className="hidden md:flex items-center bg-black/40 p-1.5 rounded-full border border-white/5 backdrop-blur-md">
+             <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step === 1 ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-500'}`}>
                 1. Input
              </div>
-             <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step >= 2 ? 'bg-purple-900/30 text-purple-300 border border-purple-500/30' : 'text-slate-600'}`}>
+             <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step >= 2 ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-500'}`}>
                 2. Structure
              </div>
-             <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step === 3 ? 'bg-purple-900/30 text-purple-300 border border-purple-500/30' : 'text-slate-600'}`}>
+             <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all ${step === 3 ? 'bg-purple-900/40 text-purple-300 border border-purple-500/30' : 'text-slate-500'}`}>
                 3. Finalize
              </div>
           </div>
           
           <div className="flex items-center gap-4">
              {rootHandle ? (
-                  <div className="flex items-center gap-2 bg-[#111] px-2 md:px-3 py-1.5 rounded-lg border border-green-900/30 text-green-400 text-[10px] md:text-xs font-medium max-w-[120px] md:max-w-none">
+                  <div className="flex items-center gap-2 bg-black/40 px-2 md:px-3 py-1.5 rounded-lg border border-green-900/30 text-green-400 text-[10px] md:text-xs font-medium max-w-[120px] md:max-w-none backdrop-blur-md">
                     <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></div>
                     <span className="truncate">{rootHandle.name}</span>
                   </div>
                 ) : (
                   <button 
                     onClick={handleConnectFolder}
-                    className="flex items-center gap-2 text-xs bg-[#111] text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 transition-colors whitespace-nowrap"
+                    className="flex items-center gap-2 text-xs bg-black/40 text-slate-400 hover:text-white px-3 py-1.5 rounded-lg border border-white/10 transition-colors whitespace-nowrap backdrop-blur-md"
                   >
                     <FolderOpen className="w-3 h-3" /> 
                     <span className="hidden sm:inline">Connect Library</span>
@@ -138,7 +138,7 @@ export default function App() {
         {step === 1 && (
              <div className="max-w-3xl mx-auto mt-4 md:mt-12 animate-fade-in-up space-y-6">
                 {error && (
-                  <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl flex items-center gap-3">
+                  <div className="bg-red-500/20 backdrop-blur-xl border border-red-500/30 text-red-100 p-4 rounded-xl flex items-center gap-3 shadow-lg">
                     <AlertTriangle className="w-5 h-5 text-red-400 flex-shrink-0" />
                     <p className="text-sm font-medium">{error}</p>
                   </div>
@@ -181,10 +181,10 @@ export default function App() {
       </main>
 
       {step === 1 && (
-        <footer className="border-t border-white/5 mt-auto bg-[#0a0a0a]">
+        <footer className="border-t border-white/5 mt-auto bg-[#0a0a0a]/60 backdrop-blur-md">
             <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p className="text-xs text-slate-600 text-center md:text-left">Powered by Google Gemini 2.5 Flash</p>
-                <div className="flex gap-4 text-xs text-slate-600">
+                <p className="text-xs text-slate-500 text-center md:text-left">Powered by Google Gemini 2.5 Flash</p>
+                <div className="flex gap-4 text-xs text-slate-500">
                     <span>Privacy</span>
                     <span>Terms</span>
                 </div>

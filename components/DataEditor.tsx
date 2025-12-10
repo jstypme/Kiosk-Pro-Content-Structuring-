@@ -51,8 +51,8 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, onChange }) => {
 
   // Shared classes
   const labelClass = "block text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2";
-  const inputClass = "w-full p-3 bg-black border border-white/10 rounded-xl focus:ring-1 focus:ring-purple-500 focus:border-purple-500 outline-none text-slate-200 transition-all placeholder:text-slate-700 text-sm";
-  const cardClass = "bg-[#111] rounded-3xl shadow-xl border border-white/5 p-5 md:p-8 relative overflow-hidden";
+  const inputClass = "w-full p-3 bg-black/50 border border-white/10 rounded-xl focus:ring-1 focus:ring-purple-500 focus:border-purple-500 outline-none text-slate-200 transition-all placeholder:text-slate-700 text-sm backdrop-blur-sm";
+  const cardClass = "bg-black/60 backdrop-blur-xl rounded-3xl shadow-xl border border-white/10 p-5 md:p-8 relative overflow-hidden";
 
   return (
     <div className="space-y-6">
@@ -204,7 +204,7 @@ const DataEditor: React.FC<DataEditorProps> = ({ data, onChange }) => {
 
         <div className="space-y-8">
             {/* Dimensions */}
-            <div className="bg-black/50 p-4 md:p-6 rounded-2xl border border-white/5">
+            <div className="bg-black/40 p-4 md:p-6 rounded-2xl border border-white/5">
                 <label className={labelClass}><Ruler className="w-3 h-3" /> Dimensions & Weight</label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                     {['width', 'height', 'depth', 'weight'].map((dim) => (

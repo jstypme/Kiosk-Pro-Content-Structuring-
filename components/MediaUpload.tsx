@@ -16,7 +16,7 @@ interface CardProps {
 }
 
 const Card = ({ children, title, icon: Icon, isProcessing }: CardProps) => (
-    <div className="bg-[#111] border border-white/5 rounded-3xl overflow-hidden mb-6">
+    <div className="bg-black/60 backdrop-blur-xl border border-white/10 rounded-3xl overflow-hidden mb-6 shadow-xl">
         <div className="bg-white/5 px-4 md:px-6 py-4 flex items-center justify-between border-b border-white/5">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
                 <Icon className="w-4 h-4 text-purple-400" /> {title}
@@ -128,7 +128,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
   const getDragClass = (field: string) => 
     dragActive === field 
       ? 'border-purple-500 bg-purple-900/10 ring-1 ring-purple-500/50' 
-      : 'border-white/5 hover:border-purple-500/30 bg-[#111]';
+      : 'border-white/10 hover:border-purple-500/30 bg-black/60 backdrop-blur-xl';
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -136,7 +136,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
       {/* Primary Assets */}
       <div className="grid grid-cols-2 gap-4">
           <div 
-            className={`rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group transition-all cursor-pointer h-40 border ${getDragClass('logo')}`}
+            className={`rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group transition-all cursor-pointer h-40 border shadow-xl ${getDragClass('logo')}`}
             onDragEnter={(e) => handleDrag(e, 'logo')}
             onDragLeave={(e) => handleDrag(e, 'logo')}
             onDragOver={(e) => handleDrag(e, 'logo')}
@@ -172,7 +172,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
           </div>
 
           <div 
-            className={`rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group transition-all cursor-pointer h-40 border ${getDragClass('cover')}`}
+            className={`rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group transition-all cursor-pointer h-40 border shadow-xl ${getDragClass('cover')}`}
             onDragEnter={(e) => handleDrag(e, 'cover')}
             onDragLeave={(e) => handleDrag(e, 'cover')}
             onDragOver={(e) => handleDrag(e, 'cover')}
@@ -222,7 +222,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
                      <button onClick={() => removeFile('gallery', i)} className="absolute top-0 right-0 bg-red-600 text-white w-5 h-5 flex items-center justify-center text-[10px] md:opacity-0 md:group-hover:opacity-100 transition-opacity">×</button>
                 </div>
             ))}
-             <label className="aspect-square bg-black border border-white/10 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-purple-500/50 hover:bg-purple-900/10 transition-all">
+             <label className="aspect-square bg-black/50 border border-white/10 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-purple-500/50 hover:bg-purple-900/10 transition-all">
                 <span className="text-xl text-slate-600 mb-1">+</span>
                 <span className="text-[8px] uppercase text-slate-500 font-bold">Add</span>
                 <input type="file" multiple accept="image/*" className="hidden" onChange={(e) => handleFileChange('gallery', e.target.files)} />
@@ -239,7 +239,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
              onDrop={(e) => handleDrop(e, 'videos')}
            >
                {media.videos.map((file, i) => (
-                   <div key={i} className="flex items-center justify-between bg-black p-2 rounded-lg border border-white/5">
+                   <div key={i} className="flex items-center justify-between bg-black/50 p-2 rounded-lg border border-white/5">
                         <div className="flex items-center gap-2 overflow-hidden">
                              <div className="w-6 h-6 bg-purple-900/40 rounded flex items-center justify-center flex-shrink-0">
                                  <Video className="w-3 h-3 text-purple-400" />
@@ -265,7 +265,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
              onDrop={(e) => handleDrop(e, 'manuals')}
            >
                {media.manuals.map((manual, i) => (
-                   <div key={i} className="flex items-center gap-3 bg-black p-3 rounded-xl border border-white/10 group">
+                   <div key={i} className="flex items-center gap-3 bg-black/50 p-3 rounded-xl border border-white/10 group">
                         <div className="w-8 h-8 bg-green-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
                             <FileText className="w-4 h-4 text-green-400" />
                         </div>
