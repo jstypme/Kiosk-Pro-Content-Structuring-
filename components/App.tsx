@@ -5,7 +5,7 @@ import MediaUpload from './MediaUpload';
 import ExportSection from './ExportSection';
 import { generateProductContent } from '../services/geminiService';
 import { ProductData, MediaFiles } from '../types';
-import { Box, FolderOpen, Zap, LayoutTemplate } from 'lucide-react';
+import { Box, FolderOpen, Zap, LayoutTemplate, AlertTriangle } from 'lucide-react';
 import { getStoredDirectoryHandle, pickDirectory } from '../services/fileSystemService';
 
 const initialProductData: ProductData = {
@@ -38,6 +38,7 @@ export default function App() {
   const [productData, setProductData] = useState<ProductData>(initialProductData);
   const [media, setMedia] = useState<MediaFiles>(initialMedia);
   const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Load saved handle on mount
   useEffect(() => {
@@ -61,12 +62,14 @@ export default function App() {
 
   const handleGenerate = async (text: string) => {
     setIsLoading(true);
+    setError(null);
     try {
       const result = await generateProductContent(text);
       setProductData(result);
       setStep(2);
-    } catch (error) {
-      alert("Failed to generate content. Please check your API key and try again.");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Failed to generate content. Please check your API key and try again.");
     } finally {
       setIsLoading(false);
     }
@@ -123,7 +126,13 @@ export default function App() {
       <main className="max-w-[1600px] mx-auto px-8 py-10 flex-grow w-full">
         
         {step === 1 && (
-             <div className="max-w-3xl mx-auto mt-12 animate-fade-in-up">
+             <div className="max-w-3xl mx-auto mt-12 animate-fade-in-up space-y-6">
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl flex items-center gap-3">
+                    <AlertTriangle className="w-5 h-5 text-red-400" />
+                    <p className="text-sm font-medium">{error}</p>
+                  </div>
+                )}
                 <InputSection onGenerate={handleGenerate} isLoading={isLoading} />
              </div>
         )}

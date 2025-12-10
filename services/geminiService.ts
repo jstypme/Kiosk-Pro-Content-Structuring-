@@ -50,14 +50,16 @@ const parseProductSchema: SchemaParams = {
 };
 
 export const generateProductContent = async (rawText: string): Promise<ProductData> => {
+  // Ensure process.env.API_KEY is accessible. 
+  // If running in a browser that doesn't polyfill process, this needs a global definition (handled in index.tsx)
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
-    throw new Error("API Key not found in environment variables.");
+    throw new Error("API Key not found in environment variables. Please check your configuration.");
   }
 
   const ai = new GoogleGenAI({ apiKey });
 
-  const prompt = `
+  const systemInstruction = `
     You are an elite Product Data Architect for a high-end e-commerce kiosk system.
     Your mission is to convert raw, unstructured text (often from OCR or messy inputs) into a pristine, fully populated product record.
 
@@ -79,16 +81,14 @@ export const generateProductContent = async (rawText: string): Promise<ProductDa
     **REQUIRED SPECS TO EXTRACT (in 'specs' array)**:
     - Populate this array with Key-Value pairs for every technical detail found or inferred.
     - Examples: { "key": "Wattage", "value": "900W" }, { "key": "Capacity", "value": "30L" }, { "key": "Control Type", "value": "Digital" }, { "key": "Color", "value": "Silver" }.
-
-    **Input Data**:
-    ${rawText}
   `;
 
   try {
     const response = await ai.models.generateContent({
       model: "gemini-3-pro-preview",
-      contents: prompt,
+      contents: rawText,
       config: {
+        systemInstruction: systemInstruction,
         responseMimeType: "application/json",
         responseSchema: parseProductSchema,
       },

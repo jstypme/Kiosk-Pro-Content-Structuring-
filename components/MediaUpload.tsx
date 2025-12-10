@@ -8,6 +8,20 @@ interface MediaUploadProps {
   onChange: (media: MediaFiles) => void;
 }
 
+const Card = ({ children, title, icon: Icon, isProcessing }: { children: React.ReactNode, title: string, icon: any, isProcessing: boolean }) => (
+    <div className="bg-[#111] border border-white/5 rounded-3xl overflow-hidden mb-6">
+        <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-b border-white/5">
+            <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <Icon className="w-4 h-4 text-purple-400" /> {title}
+            </h3>
+            {isProcessing && <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />}
+        </div>
+        <div className="p-6">
+            {children}
+        </div>
+    </div>
+);
+
 const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -56,20 +70,6 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
         onChange({ ...media, [field]: null });
     }
   };
-
-  const Card = ({ children, title, icon: Icon }: { children: React.ReactNode, title: string, icon: any }) => (
-    <div className="bg-[#111] border border-white/5 rounded-3xl overflow-hidden mb-6">
-        <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-b border-white/5">
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <Icon className="w-4 h-4 text-purple-400" /> {title}
-            </h3>
-            {isProcessing && <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />}
-        </div>
-        <div className="p-6">
-            {children}
-        </div>
-    </div>
-  );
 
   return (
     <div className="animate-fade-in space-y-6">
@@ -137,7 +137,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
           </div>
       </div>
 
-      <Card title="Gallery Images" icon={Image}>
+      <Card title="Gallery Images" icon={Image} isProcessing={isProcessing}>
           <div className="grid grid-cols-4 gap-2">
             {media.gallery.map((file, i) => (
                 <div key={i} className="aspect-square bg-black border border-white/10 rounded-lg relative overflow-hidden group">
@@ -153,7 +153,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
           </div>
       </Card>
 
-      <Card title="Product Videos" icon={Video}>
+      <Card title="Product Videos" icon={Video} isProcessing={isProcessing}>
            <div className="space-y-2">
                {media.videos.map((file, i) => (
                    <div key={i} className="flex items-center justify-between bg-black p-2 rounded-lg border border-white/5">
@@ -173,7 +173,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
            </div>
       </Card>
 
-      <Card title="User Manual PDF" icon={FileText}>
+      <Card title="User Manual PDF" icon={FileText} isProcessing={isProcessing}>
            <div className="space-y-2">
                {media.manual ? (
                    <div className="flex items-center justify-between bg-black p-2 rounded-lg border border-green-900/30">
