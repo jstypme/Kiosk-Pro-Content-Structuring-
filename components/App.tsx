@@ -174,7 +174,7 @@ export default function App() {
       {step === 1 && (
         <footer className="border-t border-white/5 mt-auto bg-[#0a0a0a]">
             <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p className="text-xs text-slate-600 text-center md:text-left">Powered by Google Gemini 2.5 Pro</p>
+                <p className="text-xs text-slate-600 text-center md:text-left">Powered by Google Gemini 2.5 Flash</p>
                 <div className="flex gap-4 text-xs text-slate-600">
                     <span>Privacy</span>
                     <span>Terms</span>
