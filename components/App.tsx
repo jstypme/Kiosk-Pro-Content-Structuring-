@@ -75,6 +75,14 @@ export default function App() {
     }
   };
 
+  const handleNextProduct = () => {
+    setProductData(initialProductData);
+    setMedia(initialMedia);
+    setStep(1);
+    setError(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <div className="min-h-screen pb-20 flex flex-col bg-[#050505] text-slate-300 font-sans selection:bg-purple-500 selection:text-white">
       
@@ -159,6 +167,7 @@ export default function App() {
                         media={media} 
                         rootHandle={rootHandle}
                         onConnect={handleConnectFolder}
+                        onNext={handleNextProduct}
                     />
                     <MediaUpload 
                         media={media} 

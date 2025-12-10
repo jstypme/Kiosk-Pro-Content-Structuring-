@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProductData, MediaFiles } from '../types';
-import { Folder, FileJson, Image, Video, FileText, HardDrive, Package, Check } from 'lucide-react';
+import { Package, Check, ArrowRight, Save, FolderOpen } from 'lucide-react';
 import { saveToKioskLibrary, verifyPermission } from '../services/fileSystemService';
 
 interface ExportSectionProps {
@@ -8,9 +8,10 @@ interface ExportSectionProps {
   media: MediaFiles;
   rootHandle: FileSystemDirectoryHandle | null;
   onConnect: () => void;
+  onNext: () => void;
 }
 
-const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, onConnect }) => {
+const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, onConnect, onNext }) => {
   const [isSaving, setIsSaving] = React.useState(false);
   const [saveStatus, setSaveStatus] = React.useState<'idle' | 'success' | 'error'>('idle');
 
@@ -32,7 +33,6 @@ const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, 
 
       await saveToKioskLibrary(rootHandle, data, media);
       setSaveStatus('success');
-      setTimeout(() => setSaveStatus('idle'), 3000);
     } catch (error) {
       console.error("Failed to save", error);
       setSaveStatus('error');
@@ -53,94 +53,55 @@ const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, 
           <p className="text-purple-200/60 text-xs mt-1">Structure and save files to your local folder.</p>
         </div>
         
-        <button
-            onClick={handleSave}
-            disabled={isSaving}
-            className={`
-                w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-sm shadow-xl
-                transition-all transform active:scale-95 border border-white/10
-                ${isSaving 
-                ? 'bg-black/40 text-slate-400 cursor-wait' 
-                : saveStatus === 'success' 
-                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                    : 'bg-white text-purple-900 hover:bg-purple-50'
-                }
-            `}
+        {saveStatus === 'success' ? (
+            <div className="space-y-3 animate-fade-in">
+                <div className="bg-green-500/20 border border-green-500/30 rounded-xl p-3 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center shrink-0">
+                        <Check className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                        <p className="text-sm font-bold text-green-100">Saved Successfully</p>
+                        <p className="text-[10px] text-green-200/70">Files written to {rootHandle?.name}/{data.brand}/{data.category}/{data.name}</p>
+                    </div>
+                </div>
+
+                <button 
+                    onClick={onNext}
+                    className="w-full flex items-center justify-center gap-2 bg-white text-purple-900 font-bold py-3 px-4 rounded-xl hover:bg-purple-50 transition-colors shadow-lg"
+                >
+                    Start Next Product <ArrowRight className="w-4 h-4" />
+                </button>
+            </div>
+        ) : (
+             <button
+                onClick={handleSave}
+                disabled={isSaving}
+                className={`
+                    w-full flex items-center justify-center gap-2 font-bold py-3 px-4 rounded-xl transition-all shadow-lg
+                    ${!rootHandle 
+                        ? 'bg-slate-700 text-slate-300 hover:bg-slate-600' 
+                        : 'bg-white text-purple-900 hover:bg-purple-50'
+                    }
+                    ${isSaving ? 'opacity-70 cursor-wait' : ''}
+                `}
             >
-            {isSaving ? (
-                'Saving...'
-            ) : saveStatus === 'success' ? (
-                <>
-                 <Check className="w-5 h-5" /> Saved Successfully
-                </>
-            ) : (
-                <>
-                <HardDrive className="w-5 h-5" />
-                {rootHandle ? 'Save to Disk' : 'Connect Folder & Save'}
-                </>
-            )}
-        </button>
+                {isSaving ? (
+                    <>Processing...</>
+                ) : !rootHandle ? (
+                    <><FolderOpen className="w-4 h-4" /> Connect Folder to Save</>
+                ) : (
+                    <><Save className="w-4 h-4" /> Save to Drive</>
+                )}
+            </button>
+        )}
       </div>
-
-      {/* Visual File Tree Preview */}
-      <div className="bg-black/50 rounded-xl p-4 font-mono text-[10px] border border-white/5 overflow-x-auto custom-scrollbar">
-        <h3 className="text-purple-300 text-[9px] uppercase tracking-wider mb-3 border-b border-white/5 pb-2">Destination Structure</h3>
-        
-        <div className="space-y-1.5 opacity-80 whitespace-nowrap">
-            <div className="flex items-center gap-2 text-purple-300 font-bold">
-                <HardDrive className="w-3 h-3 flex-shrink-0" />
-                <span>{rootHandle ? rootHandle.name : 'Select_Folder...'}</span>
-            </div>
-            
-            <div className="pl-4 flex items-center gap-2 text-yellow-500">
-                <Folder className="w-3 h-3 flex-shrink-0" />
-                <span>{data.brand || '[Brand]'}</span>
-            </div>
-            
-            <div className="pl-8 text-slate-400 flex items-center gap-2">
-                 <FileJson className="w-2 h-2 flex-shrink-0" /> brand.json
-            </div>
-
-            <div className="pl-8 flex items-center gap-2 text-yellow-500">
-                <Folder className="w-3 h-3 flex-shrink-0" />
-                <span>{data.category || '[Category]'}</span>
-            </div>
-
-            <div className="pl-12 flex items-center gap-2 text-yellow-500">
-                <Folder className="w-3 h-3 flex-shrink-0" />
-                <span>{data.name || '[Product Name]'}</span>
-            </div>
-
-            <div className="pl-16 text-slate-400 flex items-center gap-2">
-                 <FileJson className="w-2 h-2 flex-shrink-0" /> details.json
-            </div>
-             {media.cover && (
-                <div className="pl-16 text-green-400 flex items-center gap-2">
-                    <Image className="w-2 h-2 flex-shrink-0" /> cover.{media.cover.name.split('.').pop()}
-                </div>
-            )}
-             {media.gallery.length > 0 && (
-                <div className="pl-16 text-green-400 flex items-center gap-2">
-                    <Image className="w-2 h-2 flex-shrink-0" /> gallery_1..{media.gallery.length}
-                </div>
-            )}
-             {media.videos.length > 0 && (
-                <div className="pl-16 text-purple-400 flex items-center gap-2">
-                    <Video className="w-2 h-2 flex-shrink-0" /> videos_1..{media.videos.length}
-                </div>
-            )}
-             {media.manuals.length > 0 && (
-                <div className="pl-16 text-cyan-400 flex flex-col gap-1">
-                     {media.manuals.map((m, i) => (
-                        <div key={i} className="flex items-center gap-2">
-                             <FileText className="w-2 h-2 flex-shrink-0" /> {m.name}
-                        </div>
-                     ))}
-                </div>
-            )}
-
-        </div>
-      </div>
+      
+       {/* Small status text if needed */}
+       {rootHandle && saveStatus !== 'success' && (
+           <div className="text-[10px] text-purple-300/50 text-center">
+               Target: {rootHandle.name}
+           </div>
+       )}
     </div>
   );
 };
