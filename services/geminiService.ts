@@ -49,11 +49,35 @@ const parseProductSchema: SchemaParams = {
   required: ["brand", "sku", "name", "category", "shortDescription", "whatsInTheBox", "description", "keyFeatures", "dimensions", "buyingBenefit", "terms", "specs"]
 };
 
+const getApiKey = (): string | undefined => {
+  // 1. Check standard process.env (Node/Webpack/Parcel)
+  if (typeof process !== 'undefined' && process.env?.API_KEY) {
+    return process.env.API_KEY;
+  }
+  
+  // 2. Check window.process (Polyfilled in index.tsx)
+  if (typeof window !== 'undefined' && (window as any).process?.env?.API_KEY) {
+    return (window as any).process.env.API_KEY;
+  }
+
+  // 3. Check Vite import.meta.env
+  try {
+    const metaEnv = (import.meta as any).env;
+    if (metaEnv) {
+      return metaEnv.VITE_API_KEY || metaEnv.NEXT_PUBLIC_API_KEY || metaEnv.API_KEY;
+    }
+  } catch (e) {
+    // Ignore if import.meta is not available
+  }
+  
+  return undefined;
+};
+
 export const generateProductContent = async (rawText: string): Promise<ProductData> => {
-  // Ensure process.env.API_KEY is accessible. 
-  const apiKey = process.env.API_KEY;
+  const apiKey = getApiKey();
+  
   if (!apiKey) {
-    throw new Error("API Key not found. If using Vercel or Vite, please rename your environment variable to 'VITE_API_KEY' to expose it to the browser.");
+    throw new Error("API Key not found. Please ensure VITE_API_KEY is set in your .env file or environment variables.");
   }
 
   const ai = new GoogleGenAI({ apiKey });

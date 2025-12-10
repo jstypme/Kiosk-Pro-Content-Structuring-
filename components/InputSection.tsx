@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Sparkles, Command } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Sparkles, Command, Upload, FileText } from 'lucide-react';
 
 interface InputSectionProps {
   onGenerate: (text: string) => void;
@@ -8,22 +8,59 @@ interface InputSectionProps {
 
 const InputSection: React.FC<InputSectionProps> = ({ onGenerate, isLoading }) => {
   const [text, setText] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      setText(prev => prev + (prev ? '\n\n' : '') + content);
+    };
+    reader.readAsText(file);
+    
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   return (
     <div className="bg-[#111] rounded-3xl shadow-2xl shadow-purple-900/10 border border-white/10 p-6 md:p-10 relative overflow-hidden group">
       {/* Background glow effect */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/10 blur-[100px] rounded-full pointer-events-none"></div>
       
-      <div className="mb-6 md:mb-8 relative z-10">
-        <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 mb-3">
-          <span className="w-8 h-8 md:w-10 md:h-10 bg-purple-600 text-white rounded-lg md:rounded-xl flex items-center justify-center text-lg shadow-lg shadow-purple-600/30 flex-shrink-0">
-            <Command className="w-4 h-4 md:w-5 md:h-5" />
-          </span>
-          Raw Intelligence Input
-        </h2>
-        <p className="text-slate-400 text-sm md:text-lg leading-relaxed">
-          Paste unstructured product data below. Our AI will restructure, enrich, and categorize it for the Kiosk.
-        </p>
+      <div className="mb-6 md:mb-8 relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold text-white flex items-center gap-3 mb-3">
+            <span className="w-8 h-8 md:w-10 md:h-10 bg-purple-600 text-white rounded-lg md:rounded-xl flex items-center justify-center text-lg shadow-lg shadow-purple-600/30 flex-shrink-0">
+              <Command className="w-4 h-4 md:w-5 md:h-5" />
+            </span>
+            Raw Intelligence Input
+          </h2>
+          <p className="text-slate-400 text-sm md:text-lg leading-relaxed">
+            Paste unstructured product data or upload text files. Our AI will restructure and enrich it.
+          </p>
+        </div>
+
+        <div className="flex-shrink-0">
+            <input 
+                type="file" 
+                ref={fileInputRef} 
+                accept=".txt,.md,.json,.csv,.xml" 
+                className="hidden" 
+                onChange={handleFileUpload}
+            />
+            <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-2 text-xs font-bold text-purple-300 bg-purple-900/20 hover:bg-purple-900/40 px-4 py-2 rounded-lg transition-all border border-purple-500/20"
+            >
+                <Upload className="w-3 h-3" />
+                Import Text File
+            </button>
+        </div>
       </div>
 
       <div className="relative z-10">
