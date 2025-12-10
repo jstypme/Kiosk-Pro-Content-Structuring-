@@ -1,6 +1,6 @@
 import React, { useState, DragEvent } from 'react';
 import { MediaFiles } from '../types';
-import { Image, Video, FileText, Loader2, UploadCloud } from 'lucide-react';
+import { Image, Video, FileText, Loader2, UploadCloud, Edit2 } from 'lucide-react';
 import { resizeImage } from '../services/imageProcessing';
 
 interface MediaUploadProps {
@@ -35,7 +35,7 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
 
   const isValidFileType = (file: File, field: keyof MediaFiles) => {
     if (field === 'videos') return file.type.startsWith('video/');
-    if (field === 'manual') return file.type === 'application/pdf';
+    if (field === 'manuals') return file.type === 'application/pdf';
     return file.type.startsWith('image/');
   };
 
@@ -67,6 +67,9 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
       if (field === 'gallery' || field === 'videos') {
          const current = media[field] as File[];
          onChange({ ...media, [field]: [...current, ...processedFiles] });
+      } else if (field === 'manuals') {
+         const newManuals = processedFiles.map(f => ({ file: f, name: f.name }));
+         onChange({ ...media, manuals: [...media.manuals, ...newManuals] });
       } else {
         onChange({ ...media, [field]: processedFiles[0] });
       }
@@ -83,9 +86,19 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
         if (typeof index === 'number') {
             onChange({ ...media, [field]: current.filter((_, i) => i !== index) });
         }
+    } else if (field === 'manuals') {
+         if (typeof index === 'number') {
+            onChange({ ...media, manuals: media.manuals.filter((_, i) => i !== index) });
+        }
     } else {
         onChange({ ...media, [field]: null });
     }
+  };
+
+  const updateManualName = (index: number, newName: string) => {
+    const updated = [...media.manuals];
+    updated[index] = { ...updated[index], name: newName };
+    onChange({ ...media, manuals: updated });
   };
 
   // Drag Handlers
@@ -243,30 +256,44 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
            </div>
       </Card>
 
-      <Card title="User Manual PDF" icon={FileText} isProcessing={isProcessing}>
+      <Card title="User Manuals" icon={FileText} isProcessing={isProcessing}>
            <div 
-             className={`space-y-2 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'manual' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
-             onDragEnter={(e) => handleDrag(e, 'manual')}
-             onDragLeave={(e) => handleDrag(e, 'manual')}
-             onDragOver={(e) => handleDrag(e, 'manual')}
-             onDrop={(e) => handleDrop(e, 'manual')}
+             className={`space-y-3 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'manuals' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
+             onDragEnter={(e) => handleDrag(e, 'manuals')}
+             onDragLeave={(e) => handleDrag(e, 'manuals')}
+             onDragOver={(e) => handleDrag(e, 'manuals')}
+             onDrop={(e) => handleDrop(e, 'manuals')}
            >
-               {media.manual ? (
-                   <div className="flex items-center justify-between bg-black p-2 rounded-lg border border-green-900/30">
-                        <div className="flex items-center gap-2 overflow-hidden">
-                             <div className="w-6 h-6 bg-green-900/20 rounded flex items-center justify-center flex-shrink-0">
-                                 <FileText className="w-3 h-3 text-green-400" />
-                             </div>
-                             <span className="text-xs text-green-400 truncate">{media.manual.name}</span>
+               {media.manuals.map((manual, i) => (
+                   <div key={i} className="flex items-center gap-3 bg-black p-3 rounded-xl border border-white/10 group">
+                        <div className="w-8 h-8 bg-green-900/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <FileText className="w-4 h-4 text-green-400" />
                         </div>
-                        <button onClick={() => removeFile('manual')} className="text-slate-600 hover:text-red-500">×</button>
+                        <div className="flex-grow min-w-0">
+                            <label className="text-[9px] text-slate-500 font-bold uppercase block mb-1">
+                                Display Name
+                            </label>
+                            <div className="flex items-center gap-2">
+                                <input 
+                                    type="text" 
+                                    value={manual.name}
+                                    onChange={(e) => updateManualName(i, e.target.value)}
+                                    className="w-full bg-transparent border-b border-white/10 focus:border-green-500 p-0 pb-1 text-sm font-medium text-slate-200 focus:ring-0 placeholder:text-slate-700 transition-colors"
+                                    placeholder="e.g. User Manual"
+                                />
+                                <Edit2 className="w-3 h-3 text-slate-600 flex-shrink-0" />
+                            </div>
+                        </div>
+                        <button onClick={() => removeFile('manuals', i)} className="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all">
+                            ×
+                        </button>
                    </div>
-               ) : (
-                <label className="flex items-center justify-center gap-2 p-3 border border-dashed border-white/10 rounded-lg cursor-pointer hover:bg-white/5 hover:border-purple-500/30 transition-all text-xs font-bold text-slate-400">
-                    <UploadCloud className="w-4 h-4" /> Upload PDF
-                    <input type="file" accept=".pdf" className="hidden" onChange={(e) => handleFileChange('manual', e.target.files)} />
-                </label>
-               )}
+               ))}
+
+               <label className="flex items-center justify-center gap-2 p-3 border border-dashed border-white/10 rounded-lg cursor-pointer hover:bg-white/5 hover:border-purple-500/30 transition-all text-xs font-bold text-slate-400 mt-2">
+                    <UploadCloud className="w-4 h-4" /> Add PDF Manual
+                    <input type="file" multiple accept=".pdf" className="hidden" onChange={(e) => handleFileChange('manuals', e.target.files)} />
+               </label>
            </div>
       </Card>
 

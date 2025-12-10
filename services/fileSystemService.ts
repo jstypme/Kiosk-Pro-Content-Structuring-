@@ -61,15 +61,23 @@ export const verifyPermission = async (fileHandle: FileSystemDirectoryHandle, re
   return false;
 };
 
+// --- Helper: Sanitize Filenames ---
+const sanitizeFileName = (name: string, fallback: string = "Untitled"): string => {
+  // Replace invalid filesystem characters (< > : " / \ | ? *) with a hyphen
+  const sanitized = name.replace(/[<>:"/\\|?*]/g, '-').trim();
+  return sanitized.length > 0 ? sanitized : fallback;
+};
+
 // --- File Writing Logic ---
 
 export const saveToKioskLibrary = async (rootHandle: FileSystemDirectoryHandle, product: ProductData, media: MediaFiles) => {
   
   // 1. Brand Folder
-  const brandName = product.brand.trim() || "Unknown Brand";
+  const rawBrand = product.brand.trim();
+  const brandName = sanitizeFileName(rawBrand, "Unknown Brand");
   const brandDir = await rootHandle.getDirectoryHandle(brandName, { create: true });
 
-  // 1a. Brand Assets (Write only if they don't exist, or overwrite? We'll overwrite to ensure latest)
+  // 1a. Brand Assets
   if (media.logo) {
     const ext = media.logo.name.split('.').pop() || 'png';
     const logoFile = await brandDir.getFileHandle(`brand_logo.${ext}`, { create: true });
@@ -78,19 +86,19 @@ export const saveToKioskLibrary = async (rootHandle: FileSystemDirectoryHandle, 
 
   const brandJson = {
     id: `b-${brandName.toLowerCase().replace(/\s+/g, '-')}`,
-    name: brandName
+    name: rawBrand || brandName
   };
   const brandFile = await brandDir.getFileHandle("brand.json", { create: true });
   await writeFile(brandFile, JSON.stringify(brandJson, null, 2));
 
 
   // 2. Category Folder
-  const categoryName = product.category.trim() || "Uncategorized";
+  const categoryName = sanitizeFileName(product.category, "Uncategorized");
   const categoryDir = await brandDir.getDirectoryHandle(categoryName, { create: true });
 
 
   // 3. Product Folder
-  const productName = product.name.trim() || "Untitled Product";
+  const productName = sanitizeFileName(product.name, "Untitled Product");
   const productDir = await categoryDir.getDirectoryHandle(productName, { create: true });
 
   // 3a. details.json
@@ -140,9 +148,15 @@ export const saveToKioskLibrary = async (rootHandle: FileSystemDirectoryHandle, 
     await writeFile(file, fileData);
   }
 
-  if (media.manual) {
-    const file = await productDir.getFileHandle(media.manual.name, { create: true });
-    await writeFile(file, media.manual);
+  // Save Manuals with custom names
+  for (const manual of media.manuals) {
+    let rawName = manual.name.trim();
+    if (!rawName.toLowerCase().endsWith('.pdf')) {
+        rawName += '.pdf';
+    }
+    const fileName = sanitizeFileName(rawName, "manual.pdf");
+    const file = await productDir.getFileHandle(fileName, { create: true });
+    await writeFile(file, manual.file);
   }
 
   return true;

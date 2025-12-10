@@ -84,11 +84,14 @@ export const generateKioskZip = async (product: ProductData, media: MediaFiles):
     productFolder.file(`video_${index + 1}.${ext}`, file);
   });
 
-  // Manual (PDF)
-  if (media.manual) {
-     // Keep original name or standardise
-     productFolder.file(media.manual.name, media.manual);
-  }
+  // Manuals
+  media.manuals.forEach((manual) => {
+     let fileName = manual.name.trim();
+     if (!fileName.toLowerCase().endsWith('.pdf')) {
+         fileName += '.pdf';
+     }
+     productFolder.file(fileName, manual.file);
+  });
 
   // Generate the ZIP blob
   return await zip.generateAsync({ type: "blob" });

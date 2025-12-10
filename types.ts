@@ -21,11 +21,16 @@ export interface ProductData {
   terms: string;
 }
 
+export interface ManualFile {
+  file: File;
+  name: string;
+}
+
 export interface MediaFiles {
   cover: File | null;
   gallery: File[];
   videos: File[];
-  manual: File | null;
+  manuals: ManualFile[];
   logo: File | null;
 }
 

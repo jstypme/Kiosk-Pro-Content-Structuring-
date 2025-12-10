@@ -28,7 +28,7 @@ const initialMedia: MediaFiles = {
   cover: null,
   gallery: [],
   videos: [],
-  manual: null,
+  manuals: [],
   logo: null
 };
 

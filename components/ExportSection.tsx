@@ -1,6 +1,6 @@
 import React from 'react';
 import { ProductData, MediaFiles } from '../types';
-import { Folder, FileJson, Image, Video, FileText, HardDrive, Package, AlertCircle, Check } from 'lucide-react';
+import { Folder, FileJson, Image, Video, FileText, HardDrive, Package, Check } from 'lucide-react';
 import { saveToKioskLibrary, verifyPermission } from '../services/fileSystemService';
 
 interface ExportSectionProps {
@@ -127,6 +127,15 @@ const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, 
              {media.videos.length > 0 && (
                 <div className="pl-16 text-purple-400 flex items-center gap-2">
                     <Video className="w-2 h-2 flex-shrink-0" /> videos_1..{media.videos.length}
+                </div>
+            )}
+             {media.manuals.length > 0 && (
+                <div className="pl-16 text-cyan-400 flex flex-col gap-1">
+                     {media.manuals.map((m, i) => (
+                        <div key={i} className="flex items-center gap-2">
+                             <FileText className="w-2 h-2 flex-shrink-0" /> {m.name}
+                        </div>
+                     ))}
                 </div>
             )}
 
