@@ -3,6 +3,7 @@ import InputSection from './InputSection';
 import DataEditor from './DataEditor';
 import MediaUpload from './MediaUpload';
 import ExportSection from './ExportSection';
+import BackgroundAnimation from './BackgroundAnimation';
 import { generateProductContent } from '../services/geminiService';
 import { ProductData, MediaFiles } from '../types';
 import { Box, FolderOpen, AlertTriangle } from 'lucide-react';
@@ -84,7 +85,8 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen pb-20 flex flex-col flashy-bg text-slate-300 font-sans selection:bg-purple-500 selection:text-white">
+    <div className="min-h-screen pb-20 flex flex-col text-slate-300 font-sans selection:bg-purple-500 selection:text-white relative">
+      <BackgroundAnimation />
       
       {/* Header */}
       <header className="bg-[#0a0a0a]/60 backdrop-blur-xl border-b border-white/5 sticky top-0 z-50 transition-all">
@@ -133,7 +135,7 @@ export default function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 md:py-10 flex-grow w-full">
+      <main className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 md:py-10 flex-grow w-full relative z-10">
         
         {step === 1 && (
              <div className="max-w-3xl mx-auto mt-4 md:mt-12 animate-fade-in-up space-y-6">
@@ -181,7 +183,7 @@ export default function App() {
       </main>
 
       {step === 1 && (
-        <footer className="border-t border-white/5 mt-auto bg-[#0a0a0a]/60 backdrop-blur-md">
+        <footer className="border-t border-white/5 mt-auto bg-[#0a0a0a]/60 backdrop-blur-md relative z-10">
             <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p className="text-xs text-slate-500 text-center md:text-left">Powered by Google Gemini 2.5 Flash</p>
                 <div className="flex gap-4 text-xs text-slate-500">
