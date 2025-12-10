@@ -51,10 +51,9 @@ const parseProductSchema: SchemaParams = {
 
 export const generateProductContent = async (rawText: string): Promise<ProductData> => {
   // Ensure process.env.API_KEY is accessible. 
-  // If running in a browser that doesn't polyfill process, this needs a global definition (handled in index.tsx)
   const apiKey = process.env.API_KEY;
   if (!apiKey) {
-    throw new Error("API Key not found in environment variables. Please check your configuration.");
+    throw new Error("API Key not found. If using Vercel or Vite, please rename your environment variable to 'VITE_API_KEY' to expose it to the browser.");
   }
 
   const ai = new GoogleGenAI({ apiKey });

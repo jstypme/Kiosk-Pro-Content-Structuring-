@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, DragEvent } from 'react';
 import { MediaFiles } from '../types';
 import { Image, Video, FileText, Loader2, UploadCloud } from 'lucide-react';
 import { resizeImage } from '../services/imageProcessing';
@@ -8,7 +8,14 @@ interface MediaUploadProps {
   onChange: (media: MediaFiles) => void;
 }
 
-const Card = ({ children, title, icon: Icon, isProcessing }: { children: React.ReactNode, title: string, icon: any, isProcessing: boolean }) => (
+interface CardProps {
+  children?: React.ReactNode;
+  title: string;
+  icon: any;
+  isProcessing: boolean;
+}
+
+const Card = ({ children, title, icon: Icon, isProcessing }: CardProps) => (
     <div className="bg-[#111] border border-white/5 rounded-3xl overflow-hidden mb-6">
         <div className="bg-white/5 px-6 py-4 flex items-center justify-between border-b border-white/5">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
@@ -24,16 +31,26 @@ const Card = ({ children, title, icon: Icon, isProcessing }: { children: React.R
 
 const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const [dragActive, setDragActive] = useState<string | null>(null);
+
+  const isValidFileType = (file: File, field: keyof MediaFiles) => {
+    if (field === 'videos') return file.type.startsWith('video/');
+    if (field === 'manual') return file.type === 'application/pdf';
+    return file.type.startsWith('image/');
+  };
 
   const handleFileChange = async (field: keyof MediaFiles, files: FileList | null) => {
     if (!files || files.length === 0) return;
 
+    // Filter valid files
+    const validFiles = Array.from(files).filter(f => isValidFileType(f, field));
+    if (validFiles.length === 0) return;
+
     setIsProcessing(true);
-    const fileList = Array.from(files);
     const processedFiles: File[] = [];
 
     try {
-      for (const file of fileList) {
+      for (const file of validFiles) {
         if (file.type.startsWith('image/')) {
           try {
             const resized = await resizeImage(file, 500, 500);
@@ -71,12 +88,47 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
     }
   };
 
+  // Drag Handlers
+  const handleDrag = (e: DragEvent, field: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(field);
+    } else if (e.type === 'dragleave') {
+        // Prevent flickering when entering children
+        if (e.relatedTarget && (e.currentTarget.contains(e.relatedTarget as Node))) {
+            return;
+        }
+        setDragActive(null);
+    }
+  };
+
+  const handleDrop = (e: DragEvent, field: keyof MediaFiles) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(null);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange(field, e.dataTransfer.files);
+    }
+  };
+
+  const getDragClass = (field: string) => 
+    dragActive === field 
+      ? 'border-purple-500 bg-purple-900/10 ring-1 ring-purple-500/50' 
+      : 'border-white/5 hover:border-purple-500/30 bg-[#111]';
+
   return (
     <div className="animate-fade-in space-y-6">
       
       {/* Primary Assets */}
       <div className="grid grid-cols-2 gap-4">
-          <div className="bg-[#111] border border-white/5 rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group hover:border-purple-500/30 transition-colors cursor-pointer h-40">
+          <div 
+            className={`rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group transition-all cursor-pointer h-40 border ${getDragClass('logo')}`}
+            onDragEnter={(e) => handleDrag(e, 'logo')}
+            onDragLeave={(e) => handleDrag(e, 'logo')}
+            onDragOver={(e) => handleDrag(e, 'logo')}
+            onDrop={(e) => handleDrop(e, 'logo')}
+          >
                 <input 
                   type="file" 
                   accept="image/*" 
@@ -106,7 +158,13 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
                 )}
           </div>
 
-          <div className="bg-[#111] border border-white/5 rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group hover:border-purple-500/30 transition-colors cursor-pointer h-40">
+          <div 
+            className={`rounded-3xl p-4 flex flex-col items-center justify-center text-center relative group transition-all cursor-pointer h-40 border ${getDragClass('cover')}`}
+            onDragEnter={(e) => handleDrag(e, 'cover')}
+            onDragLeave={(e) => handleDrag(e, 'cover')}
+            onDragOver={(e) => handleDrag(e, 'cover')}
+            onDrop={(e) => handleDrop(e, 'cover')}
+          >
                 <input 
                   type="file" 
                   accept="image/*" 
@@ -138,7 +196,13 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
       </div>
 
       <Card title="Gallery Images" icon={Image} isProcessing={isProcessing}>
-          <div className="grid grid-cols-4 gap-2">
+          <div 
+            className={`grid grid-cols-4 gap-2 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'gallery' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
+             onDragEnter={(e) => handleDrag(e, 'gallery')}
+             onDragLeave={(e) => handleDrag(e, 'gallery')}
+             onDragOver={(e) => handleDrag(e, 'gallery')}
+             onDrop={(e) => handleDrop(e, 'gallery')}
+          >
             {media.gallery.map((file, i) => (
                 <div key={i} className="aspect-square bg-black border border-white/10 rounded-lg relative overflow-hidden group">
                      <img src={URL.createObjectURL(file)} className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity" />
@@ -154,7 +218,13 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
       </Card>
 
       <Card title="Product Videos" icon={Video} isProcessing={isProcessing}>
-           <div className="space-y-2">
+           <div 
+             className={`space-y-2 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'videos' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
+             onDragEnter={(e) => handleDrag(e, 'videos')}
+             onDragLeave={(e) => handleDrag(e, 'videos')}
+             onDragOver={(e) => handleDrag(e, 'videos')}
+             onDrop={(e) => handleDrop(e, 'videos')}
+           >
                {media.videos.map((file, i) => (
                    <div key={i} className="flex items-center justify-between bg-black p-2 rounded-lg border border-white/5">
                         <div className="flex items-center gap-2 overflow-hidden">
@@ -174,7 +244,13 @@ const MediaUpload: React.FC<MediaUploadProps> = ({ media, onChange }) => {
       </Card>
 
       <Card title="User Manual PDF" icon={FileText} isProcessing={isProcessing}>
-           <div className="space-y-2">
+           <div 
+             className={`space-y-2 transition-all p-2 -m-2 rounded-xl border border-transparent ${dragActive === 'manual' ? 'bg-purple-900/10 border-purple-500/30' : ''}`}
+             onDragEnter={(e) => handleDrag(e, 'manual')}
+             onDragLeave={(e) => handleDrag(e, 'manual')}
+             onDragOver={(e) => handleDrag(e, 'manual')}
+             onDrop={(e) => handleDrop(e, 'manual')}
+           >
                {media.manual ? (
                    <div className="flex items-center justify-between bg-black p-2 rounded-lg border border-green-900/30">
                         <div className="flex items-center gap-2 overflow-hidden">
