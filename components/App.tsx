@@ -6,7 +6,7 @@ import ExportSection from './ExportSection';
 import BackgroundAnimation from './BackgroundAnimation';
 import { generateProductContent } from '../services/geminiService';
 import { ProductData, MediaFiles } from '../types';
-import { Box, FolderOpen, AlertTriangle } from 'lucide-react';
+import { Box, FolderOpen, AlertTriangle, Download } from 'lucide-react';
 import { getStoredDirectoryHandle, pickDirectory } from '../services/fileSystemService';
 
 const initialProductData: ProductData = {
@@ -40,6 +40,7 @@ export default function App() {
   const [media, setMedia] = useState<MediaFiles>(initialMedia);
   const [rootHandle, setRootHandle] = useState<FileSystemDirectoryHandle | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
 
   // Load saved handle on mount
   useEffect(() => {
@@ -50,6 +51,18 @@ export default function App() {
       }
     };
     loadHandle();
+
+    // PWA Install Prompt Listener
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
   }, []);
 
   const handleConnectFolder = async () => {
@@ -84,6 +97,19 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  const handleInstallClick = () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    installPrompt.userChoice.then((choiceResult: any) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+        setInstallPrompt(null);
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+    });
+  };
+
   return (
     <div className="min-h-screen pb-20 flex flex-col text-slate-300 font-sans selection:bg-purple-500 selection:text-white relative">
       <BackgroundAnimation />
@@ -114,7 +140,18 @@ export default function App() {
              </div>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
+             {/* Install PWA Button */}
+             {installPrompt && (
+               <button
+                 onClick={handleInstallClick}
+                 className="flex items-center gap-2 text-xs bg-purple-600/20 text-purple-300 hover:bg-purple-600/40 hover:text-white px-3 py-1.5 rounded-lg border border-purple-500/30 transition-all whitespace-nowrap backdrop-blur-md animate-fade-in"
+               >
+                 <Download className="w-3 h-3" />
+                 <span className="hidden sm:inline">Install App</span>
+               </button>
+             )}
+
              {rootHandle ? (
                   <div className="flex items-center gap-2 bg-black/40 px-2 md:px-3 py-1.5 rounded-lg border border-green-900/30 text-green-400 text-[10px] md:text-xs font-medium max-w-[120px] md:max-w-none backdrop-blur-md">
                     <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></div>

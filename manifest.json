@@ -1,17 +1,42 @@
 {
   "name": "Kiosk Content Architect",
   "short_name": "KioskArchitect",
+  "id": "/",
   "start_url": "/",
   "display": "standalone",
+  "orientation": "any",
   "background_color": "#050505",
   "theme_color": "#0a0a0a",
-  "description": "Premium e-commerce content generator and structuring tool.",
+  "description": "Premium e-commerce content generator and structuring tool. Transform raw product data into structured Kiosk-ready packages using AI.",
+  "categories": ["productivity", "utilities", "business"],
   "icons": [
     {
-      "src": "icon.svg",
+      "src": "/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshot_desktop.svg",
+      "sizes": "1920x1080",
+      "type": "image/svg+xml",
+      "form_factor": "wide",
+      "label": "Desktop Dashboard"
+    },
+    {
+      "src": "/screenshot_mobile.svg",
+      "sizes": "1080x1920",
+      "type": "image/svg+xml",
+      "form_factor": "narrow",
+      "label": "Mobile Interface"
     }
   ]
 }
