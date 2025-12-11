@@ -1,5 +1,6 @@
 import JSZip from 'jszip';
 import { ProductData, MediaFiles } from '../types';
+import { generateProductTextFileContent } from './fileSystemService';
 
 export const generateKioskZip = async (product: ProductData, media: MediaFiles): Promise<Blob> => {
   const zip = new JSZip();
@@ -38,7 +39,6 @@ export const generateKioskZip = async (product: ProductData, media: MediaFiles):
   });
 
   // A. details.json (The "Brain")
-  // Transforming our internal ProductData to the strict Kiosk JSON format
   const detailsJson = {
     name: product.name,
     sku: product.sku,
@@ -53,17 +53,20 @@ export const generateKioskZip = async (product: ProductData, media: MediaFiles):
     dimensions: [
       {
         label: "Product",
-        height: `${product.dimensions.height} cm`,
-        width: `${product.dimensions.width} cm`,
-        depth: `${product.dimensions.depth} cm`,
-        weight: `${product.dimensions.weight} kg`
+        height: `${product.dimensions.height}`,
+        width: `${product.dimensions.width}`,
+        depth: `${product.dimensions.depth}`,
+        weight: `${product.dimensions.weight}`
       }
     ]
   };
 
   productFolder.file("details.json", JSON.stringify(detailsJson, null, 2));
 
-  // B. Media Files
+  // B. info.txt (Full Text Record)
+  productFolder.file("info.txt", generateProductTextFileContent(product));
+
+  // C. Media Files
   
   // Cover Image
   if (media.cover) {

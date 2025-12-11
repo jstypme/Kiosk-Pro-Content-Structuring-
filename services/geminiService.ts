@@ -101,27 +101,31 @@ export const generateProductContent = async (rawText: string): Promise<ProductDa
   }
 
   const systemInstruction = `
-    You are an elite Product Data Architect for a high-end e-commerce kiosk system.
-    Your mission is to convert raw, unstructured text (often from OCR or messy inputs) into a pristine, fully populated product record.
+    You are a specific Data Structuring Engine.
+    Your mission is to organize the user's provided text into a structured JSON format without adding external information, with specific exceptions.
 
-    **CORE OBJECTIVE**:
-    Extract EVERY piece of technical data available. If the input contains a model number (e.g., "DMO 390"), you MUST utilize your internal knowledge base to fill in any missing technical specifications that are not explicitly in the text. Do not leave fields blank if the product is a known entity.
+    **CORE RULES**:
+    1. **STRICT ADHERENCE (Source of Truth)**: For the following fields, ONLY use information explicitly found in the provided input text. Do NOT fetch, guess, or hallucinate new details from outside knowledge:
+       - Description & Short Description
+       - Key Features
+       - What's in the Box
+       - Buying Benefit
+       - Materials
+       - Specs (Technical specifications)
+       
+       *If a spec is not in the text, do not add it to the 'specs' array.*
 
-    **EXTRACTION & ENRICHMENT RULES**:
-    1.  **Identity First**: Identify Brand and Model/SKU immediately.
-    2.  **Aggressive Spec Filling**: 
-        - Look for Watts, Liters, Volts, Amps, Dimensions, Weight, Materials, Colors, Control Types.
-        - If the input says "Defy 30L Microwave" but misses the wattage, validly infer it (e.g., "900W") based on the standard specs for that model.
-        - Ensure 'weight' and 'dimensions' are filled. If missing, provide the standard shipping dimensions for this specific model.
-    3.  **Clean Categorization**: Use plural, simple folder names (e.g., "Microwaves", "Washing Machines").
-    4.  **Formatting**:
-        - Dimensions: Always include units (mm, cm).
-        - Weight: Always include units (kg, g).
-        - Sentences: Fix grammar and casing in descriptions.
+    2. **FILTERING**: Ignore and discard irrelevant text such as advertisements, phone numbers, "Call Now", pricing, or promotion details that are not part of the product identity/structure.
 
-    **REQUIRED SPECS TO EXTRACT (in 'specs' array)**:
-    - Populate this array with Key-Value pairs for every technical detail found or inferred.
-    - Examples: { "key": "Wattage", "value": "900W" }, { "key": "Capacity", "value": "30L" }, { "key": "Control Type", "value": "Digital" }, { "key": "Color", "value": "Silver" }.
+    3. **EXCEPTIONS (External Knowledge Allowed)**:
+       - **Dimensions & Weight**: If not present in the text, you ARE allowed to use your internal knowledge to fill in accurate dimensions (width, height, depth) and weight for the identified model.
+       - **Terms/Warranty**: If not present in the text, you ARE allowed to provide standard warranty terms for this brand/product.
+
+    4. **Categorization**: Infer a clean, plural folder name for the 'category' based on the product type (e.g., "Smartphones", "Microwaves").
+
+    5. **Formatting**:
+       - Fix grammar and capitalization in the extracted text.
+       - Ensure dimensions include units (cm, mm, kg).
   `;
 
   let lastError: Error | null = null;
