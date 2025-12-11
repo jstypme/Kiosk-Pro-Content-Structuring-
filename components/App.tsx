@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom/client';
 import InputSection from './InputSection';
 import DataEditor from './DataEditor';
 import MediaUpload from './MediaUpload';
@@ -153,10 +154,15 @@ export default function App() {
              )}
 
              {rootHandle ? (
-                  <div className="flex items-center gap-2 bg-black/40 px-2 md:px-3 py-1.5 rounded-lg border border-green-900/30 text-green-400 text-[10px] md:text-xs font-medium max-w-[120px] md:max-w-none backdrop-blur-md">
-                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></div>
-                    <span className="truncate">{rootHandle.name}</span>
-                  </div>
+                  <button 
+                    onClick={handleConnectFolder}
+                    className="flex items-center gap-2 bg-black/40 px-2 md:px-3 py-1.5 rounded-lg border border-green-900/30 hover:border-green-500/50 hover:bg-green-900/20 text-green-400 hover:text-green-300 text-[10px] md:text-xs font-medium max-w-[150px] md:max-w-none backdrop-blur-md transition-all group cursor-pointer"
+                    title="Change Connected Folder"
+                  >
+                    <div className="w-1.5 h-1.5 md:w-2 md:h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0 group-hover:shadow-[0_0_8px_rgba(34,197,94,0.8)]"></div>
+                    <span className="truncate max-w-[100px]">{rootHandle.name}</span>
+                    <FolderOpen className="w-3 h-3 ml-1 opacity-50 group-hover:opacity-100" />
+                  </button>
                 ) : (
                   <button 
                     onClick={handleConnectFolder}

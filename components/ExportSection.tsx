@@ -96,10 +96,18 @@ const ExportSection: React.FC<ExportSectionProps> = ({ data, media, rootHandle, 
         )}
       </div>
       
-       {/* Small status text if needed */}
+       {/* Status text and Change option */}
        {rootHandle && saveStatus !== 'success' && (
-           <div className="text-[10px] text-purple-300/50 text-center">
-               Target: {rootHandle.name}
+           <div className="flex flex-col items-center justify-center gap-1 mt-2">
+               <div className="text-[10px] text-purple-300/50 text-center">
+                   Target: <span className="font-mono text-purple-300/70">{rootHandle.name}</span>
+               </div>
+               <button 
+                  onClick={onConnect} 
+                  className="text-[10px] flex items-center gap-1 text-purple-400/60 hover:text-purple-300 transition-colors underline decoration-purple-500/20 hover:decoration-purple-300"
+               >
+                   <FolderOpen className="w-3 h-3" /> Change Folder
+               </button>
            </div>
        )}
     </div>
