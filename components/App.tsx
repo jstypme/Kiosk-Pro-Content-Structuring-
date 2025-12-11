@@ -7,7 +7,7 @@ import ExportSection from './ExportSection';
 import BackgroundAnimation from './BackgroundAnimation';
 import { generateProductContent } from '../services/geminiService';
 import { ProductData, MediaFiles } from '../types';
-import { Box, FolderOpen, AlertTriangle, Download } from 'lucide-react';
+import { Box, FolderOpen, AlertTriangle, Download, RotateCcw } from 'lucide-react';
 import { getStoredDirectoryHandle, pickDirectory } from '../services/fileSystemService';
 
 const initialProductData: ProductData = {
@@ -91,6 +91,9 @@ export default function App() {
   };
 
   const handleNextProduct = () => {
+    if (step > 1 && !confirm("Are you sure you want to start over? All unsaved changes will be lost.")) {
+      return;
+    }
     setProductData(initialProductData);
     setMedia(initialMedia);
     setStep(1);
@@ -141,7 +144,19 @@ export default function App() {
              </div>
           </div>
           
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
+             {/* Restart Button */}
+             {step > 1 && (
+               <button 
+                  onClick={handleNextProduct}
+                  className="flex items-center gap-2 text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300 px-3 py-1.5 rounded-lg border border-red-500/20 transition-all whitespace-nowrap backdrop-blur-md"
+                  title="Start Over / New Product"
+               >
+                  <RotateCcw className="w-3 h-3" />
+                  <span className="hidden sm:inline">Restart</span>
+               </button>
+             )}
+
              {/* Install PWA Button */}
              {installPrompt && (
                <button
